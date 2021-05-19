@@ -1,0 +1,20 @@
+{
+	"name": "qask",
+	"version": "1.0.0",
+	"description": "Queue tasks to run sequentially",
+	"main": "dist",
+	"scripts": {
+		"build": "tsc",
+		"build:w": "tsc -w",
+		"test": "node test"
+	},
+	"files": [
+		"dist"
+	],
+	"keywords": [],
+	"author": "",
+	"license": "ISC",
+	"devDependencies": {
+		"typescript": "^4.2.4"
+	}
+}
