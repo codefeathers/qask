@@ -1,6 +1,8 @@
 # qask
 
-Tasks queued to run in intervals. Useful for ratelimiting API requests and the such.
+Queue tasks to run in intervals sequentially with fixed concurrency. Useful for ratelimiting API requests and the such.
+
+Small and has no dependencies, for node and the browser.
 
 ## Usage
 

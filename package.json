@@ -1,7 +1,7 @@
 {
 	"name": "qask",
 	"version": "1.0.0",
-	"description": "Queue tasks to run sequentially",
+	"description": "Queue tasks to run in intervals sequentially with fixed concurrency.",
 	"main": "dist",
 	"scripts": {
 		"build": "tsc",
@@ -11,9 +11,23 @@
 	"files": [
 		"dist"
 	],
-	"keywords": [],
-	"author": "",
-	"license": "ISC",
+	"keywords": [
+		"task",
+		"queue",
+		"enqueue",
+		"promise",
+		"concurrent",
+		"concurrency",
+		"limit",
+		"throttle"
+	],
+	"author": "Feathers Studio <@feathers_studio> (https://feathers.studio)",
+	"contributors": [
+		"Muthu Kumar <@MKRhere> (https://mkr.pw)"
+	],
+	"repository": "https://github.com/codefeathers/qask",
+	"funding": "https://github.com/sponsors/MKRhere",
+	"license": "MIT",
 	"devDependencies": {
 		"typescript": "^4.2.4"
 	}
