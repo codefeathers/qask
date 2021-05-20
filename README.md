@@ -93,13 +93,13 @@ Removes an eventlistener to specified event.
 
 > _(number)_
 
-Interval passed via [`Queue`](#queueinterval-options-autostart) factory. Assign to this prop to modify.
+Interval passed via [`Queue`](#queue--interval-concurrency-autostart-) factory. Assign to this prop to modify.
 
 ### queue.concurrency
 
 > _(number)_
 
-Concurrency passed via [`Queue`](#queueinterval-options-autostart) factory. Assign to this prop to modify.
+Concurrency passed via [`Queue`](#queue--interval-concurrency-autostart-) factory. Assign to this prop to modify.
 
 ### queue.size _(getter)_
 
@@ -133,4 +133,4 @@ Returns true if queue is paused. Cannot be assigned to.
 
 ## Credits
 
-Originally started as a gist based on a question by @darvesh with inputs from @TRGWII.
+Originally started as a gist based on a question by [@darvesh](https://github.com/darvesh) with inputs from [@TRGWII](https://github.com/TRGWII).
