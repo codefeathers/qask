@@ -1,6 +1,6 @@
 {
 	"name": "qask",
-	"version": "1.0.1",
+	"version": "1.0.2",
 	"description": "Queue tasks to run in intervals sequentially with fixed concurrency.",
 	"main": "dist",
 	"scripts": {
@@ -26,7 +26,7 @@
 		"Muthu Kumar <@MKRhere> (https://mkr.pw)"
 	],
 	"repository": "https://github.com/codefeathers/qask",
-	"funding": "https://github.com/sponsors/MKRhere",
+	"funding": "https://paypal.me/MKRhere",
 	"license": "MIT",
 	"devDependencies": {
 		"typescript": "^4.2.4"
