@@ -48,12 +48,10 @@ const Event = () => {
 	};
 
 	const off: EventTypes = (event: keyof Listeners, listener: any) => {
-		if (listeners[event]) {
-			const idx = listeners[event].findIndex(
-				(l: Listener<any>) => l === listener,
-			);
-			listeners[event].splice(idx);
-		}
+		const idx = listeners[event].findIndex(
+			(l: Listener<any>) => l === listener,
+		);
+		listeners[event].splice(idx, 1);
 	};
 
 	return { emit, on, off };
@@ -160,15 +158,21 @@ export const Queue = ({
 	};
 
 	return {
-		...events,
 		add,
 		addAll,
 		start,
 		pause,
-		cancel,
 		clear,
+		cancel,
+		...events,
+		get interval() {
+			return interval;
+		},
 		set interval(value: number) {
 			interval = value;
+		},
+		get concurrency() {
+			return concurrency;
 		},
 		set concurrency(value: number) {
 			concurrency = value;
