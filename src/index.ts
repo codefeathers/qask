@@ -187,7 +187,7 @@ export const Queue = ({
 			return !toStart;
 		},
 		get isEmpty() {
-			return Boolean(__queue.length);
+			return !Boolean(__queue.length);
 		},
 		get isPaused() {
 			return Boolean(timer);
