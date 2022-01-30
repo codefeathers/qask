@@ -91,7 +91,7 @@ export const Queue = ({
 		});
 	};
 
-	const addAll = <F extends () => unknown>(fs: F[]) => Promise.all(fs.map(add));
+	const addAll = <F extends () => any>(fs: F[]) => Promise.all(fs.map(add));
 
 	let timer: null | ReturnType<typeof setTimeout> = null;
 
