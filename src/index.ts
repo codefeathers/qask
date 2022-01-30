@@ -110,7 +110,6 @@ export const Queue = ({
 
 		await Promise.all(now.map(each => each()));
 		emit("next", { pending });
-		pending = 0;
 
 		timer = setTimeout(start, interval);
 
