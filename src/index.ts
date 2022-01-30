@@ -1,6 +1,6 @@
 type EventCtx = {
 	start: {};
-	step: { count: number };
+	step: { count: number; pending: number };
 	next: { pending: number };
 	drain: {};
 	pause: {};
@@ -48,14 +48,25 @@ const Event = () => {
 	return { emit, on, off };
 };
 
+const sleep = (t: number) => new Promise<void>(r => setTimeout(r, t));
+
 export const Queue = ({
 	interval = 0,
 	concurrency = 1,
 	autoStart = false,
+	strategy = "parallel",
+	delay = 0,
 }: {
+	/** Interval between two iteration of the queue */
 	interval?: number;
+	/** Tasks to take in one iteration  */
 	concurrency?: number;
+	/** `true` causes queue to start on first add() call. `false` (default) requires you to call start() */
 	autoStart?: boolean;
+	/** `"parallel"` runs all tasks in an iteration with Promise.all. `"series"` runs tasks with for..of */
+	strategy?: "parallel" | "series";
+	/** only applicable if strategy is `"series"`. Delay between each task in the series */
+	delay?: number;
 } = {}) => {
 	const __queue: (() => Promise<void>)[] = [];
 	const { emit, ...events } = Event();
@@ -105,10 +116,20 @@ export const Queue = ({
 
 		const now = __queue.splice(0, concurrency);
 
-		if (now.length) emit("step", { count: now.length });
-		pending -= now.length;
+		if (now.length) emit("step", { count: now.length, pending });
 
-		await Promise.all(now.map(each => each()));
+		if (strategy === "parallel") {
+			pending -= now.length;
+			await Promise.all(now.map(task => task()));
+		} else {
+			for (let i = 0; i <= now.length; i++) {
+				pending--;
+				await now[i]();
+				// don't sleep after last task in this iteration
+				if (i !== now.length - 1) sleep(delay);
+			}
+		}
+
 		emit("next", { pending });
 
 		timer = setTimeout(start, interval);
