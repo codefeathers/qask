@@ -1,38 +1,32 @@
-type Listener<Ctx extends {} = {}> = (ctx: Ctx) => void;
+type EventCtx = {
+	start: {};
+	step: { count: number };
+	next: { pending: number };
+	drain: {};
+	pause: {};
+	clear: { cancelled: number };
+	cancel: { cancelled: number };
+};
 
-type EmitFn<Event extends string, Ctx> = (event: Event, ctx: Ctx) => void;
+type UnionToIntersection<U> = (U extends any ? (k: U) => void : never) extends (k: infer I) => void ? I : never;
+type Intersect<T> = T extends {} ? UnionToIntersection<T[keyof T]> : never;
 
-type Emitters = EmitFn<"start", {}> &
-	EmitFn<"next", {}> &
-	EmitFn<"drain", {}> &
-	EmitFn<"pause", {}> &
-	EmitFn<"clear", { cancelled: number }> &
-	EmitFn<"cancel", { cancelled: number }>;
-
-type EventFn<Event extends string, Ctx> = (
-	event: Event,
-	listener: Listener<Ctx>,
-) => void;
-
-type EventTypes = EventFn<"start", {}> &
-	EventFn<"next", { count: number }> &
-	EventFn<"drain", {}> &
-	EventFn<"pause", {}> &
-	EventFn<"clear", { cancelled: number }> &
-	EventFn<"cancel", { cancelled: number }>;
+type Emitters = Intersect<{
+	[Event in keyof EventCtx]: (event: Event, ctx: EventCtx[Event]) => void;
+}>;
 
 type Listeners = {
-	start: Listener<{}>[];
-	next: Listener<{ count: number }>[];
-	drain: Listener<{}>[];
-	pause: Listener<{}>[];
-	clear: Listener<{ cancelled: number }>[];
-	cancel: Listener<{ cancelled: number }>[];
+	[Event in keyof EventCtx]: ((ctx: EventCtx[Event]) => void)[];
 };
+
+type EventTypes = Intersect<{
+	[Event in keyof EventCtx]: (event: Event, listener: Listeners[Event][number]) => void;
+}>;
 
 const Event = () => {
 	const listeners: Listeners = {
 		start: [],
+		step: [],
 		next: [],
 		drain: [],
 		pause: [],
@@ -40,17 +34,14 @@ const Event = () => {
 		cancel: [],
 	};
 
-	const emit: Emitters = (event: keyof Listeners, ctx: any) =>
-		listeners[event].forEach((listener: Listener<any>) => listener(ctx));
+	const emit: Emitters = (event: keyof Listeners, ctx: any) => listeners[event].forEach(listener => listener(ctx));
 
 	const on: EventTypes = (event: keyof Listeners, listener: any) => {
 		listeners[event].push(listener);
 	};
 
-	const off: EventTypes = (event: keyof Listeners, listener: any) => {
-		const idx = listeners[event].findIndex(
-			(l: Listener<any>) => l === listener,
-		);
+	const off: EventTypes = (event: keyof Listeners, listener) => {
+		const idx = listeners[event].findIndex(l => l === listener);
 		listeners[event].splice(idx, 1);
 	};
 
@@ -71,9 +62,7 @@ export const Queue = ({
 
 	let toStart = true;
 
-	const add = <T>(
-		f: () => T = () => Promise.resolve() as unknown as T,
-	): Promise<T> => {
+	const add = <T>(f: () => T = () => Promise.resolve() as unknown as T): Promise<T> => {
 		return new Promise((resolve, reject) => {
 			__queue.push(async () => {
 				try {
@@ -115,10 +104,12 @@ export const Queue = ({
 		toStart = false;
 
 		const now = __queue.splice(0, concurrency);
-		pending = now.length;
 
-		if (pending) emit("next", { count: pending });
+		if (now.length) emit("step", { count: now.length });
+		pending -= now.length;
+
 		await Promise.all(now.map(each => each()));
+		emit("next", { pending });
 		pending = 0;
 
 		timer = setTimeout(start, interval);
